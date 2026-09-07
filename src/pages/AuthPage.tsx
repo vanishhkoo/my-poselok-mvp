@@ -1,18 +1,18 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/hooks/use-toast';
 
-interface AuthDialogProps {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-  onSuccess: (name: string) => void;
-}
-
-const AuthDialog = ({ open, onOpenChange, onSuccess }: AuthDialogProps) => {
+const AuthPage = () => {
+  const navigate = useNavigate();
+  const { login, register } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,9 +26,16 @@ const AuthDialog = ({ open, onOpenChange, onSuccess }: AuthDialogProps) => {
     setErrors(e);
     if (Object.keys(e).length) return;
 
-    onSuccess(mode === 'signup' ? name.trim() : email.split('@')[0]);
-    onOpenChange(false);
-    setPassword('');
+    if (mode === 'signup') {
+      register(name.trim(), email);
+    } else {
+      login(email);
+    }
+    toast({
+      title: `Здравствуйте${mode === 'signup' ? `, ${name.trim()}` : ''}`,
+      description: mode === 'signup' ? 'Профиль создан, можно публиковать статьи.' : 'Вы вошли в журнал.',
+    });
+    navigate('/');
   };
 
   const field = (
@@ -55,14 +62,18 @@ const AuthDialog = ({ open, onOpenChange, onSuccess }: AuthDialogProps) => {
   );
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle className="font-head text-[24px] font-extrabold">Вход в журнал</DialogTitle>
-          <DialogDescription>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="mx-auto flex max-w-md flex-col px-5 py-16 md:py-24">
+        <div className="mb-8 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+            <Icon name="Sprout" size={22} />
+          </div>
+          <h1 className="mt-4 font-head text-[28px] font-extrabold">Вход в журнал</h1>
+          <p className="mt-2 text-[15px] text-muted-foreground">
             Читать можно без регистрации. Аккаунт нужен, чтобы публиковать статьи.
-          </DialogDescription>
-        </DialogHeader>
+          </p>
+        </div>
 
         <Tabs defaultValue="login">
           <TabsList className="grid w-full grid-cols-2">
@@ -91,9 +102,10 @@ const AuthDialog = ({ open, onOpenChange, onSuccess }: AuthDialogProps) => {
             </p>
           </TabsContent>
         </Tabs>
-      </DialogContent>
-    </Dialog>
+      </main>
+      <Footer />
+    </div>
   );
 };
 
-export default AuthDialog;
+export default AuthPage;

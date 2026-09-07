@@ -7,18 +7,23 @@ export type Category =
 
 export type ArticleStatus = 'published' | 'moderation' | 'draft';
 
+export interface Author {
+  id: string;
+  name: string;
+  bio: string;
+}
+
 export interface Article {
   id: string;
   title: string;
   excerpt: string;
   body: string[];
   category: Category;
+  authorId: string;
   author: string;
   date: string;
   cover: string;
   views: number;
-  likes: number;
-  comments: number;
   status: ArticleStatus;
 }
 
@@ -37,6 +42,41 @@ export const COVER_HOUSE =
 export const COVER_FOREST =
   'https://cdn.poehali.dev/projects/9c36da58-6289-473f-8198-0bcf1dd2d36e/files/41876685-a7ba-4a21-807d-080fed938149.jpg';
 
+export const covers = [COVER_PLOT, COVER_HOUSE, COVER_FOREST];
+
+export const authors: Author[] = [
+  {
+    id: 'au-ivan',
+    name: 'Иван Воробьёв',
+    bio: 'Живёт в посёлке восьмой год, ведёт хозяйство и делится практикой обустройства участка.',
+  },
+  {
+    id: 'au-anna',
+    name: 'Анна Лапина',
+    bio: 'Инженер по образованию. Пишет о доме, энергии и подготовке к сезону.',
+  },
+  {
+    id: 'au-petr',
+    name: 'Пётр Гринёв',
+    bio: 'Исследует окрестности посёлка и составляет пешие маршруты выходного дня.',
+  },
+  {
+    id: 'au-maria',
+    name: 'Мария Ковалёва',
+    bio: 'Занимается садом без химии и делится проверенной агротехникой.',
+  },
+  {
+    id: 'au-olga',
+    name: 'Ольга Титова',
+    bio: 'Организует соседские инициативы и совместные проекты для семей.',
+  },
+  {
+    id: 'au-redaction',
+    name: 'Редакция',
+    bio: 'Официальный аккаунт редакции журнала «Мой посёлок».',
+  },
+];
+
 export const articles: Article[] = [
   {
     id: 'a1',
@@ -49,12 +89,11 @@ export const articles: Article[] = [
       'К концу октября участок должен выглядеть скучно: ровная земля, укрытые грядки, сложенные в одном месте ветки. Это и есть хороший результат — весной вы начнёте не с расчистки, а с посадки.',
     ],
     category: 'Сад и участок',
+    authorId: 'au-ivan',
     author: 'Иван Воробьёв',
     date: '7 сентября',
     cover: COVER_PLOT,
     views: 940,
-    likes: 63,
-    comments: 12,
     status: 'published',
   },
   {
@@ -68,12 +107,11 @@ export const articles: Article[] = [
       'И запас: фонари, канистра воды, обогреватель, который работает без электричества. Один вечер подготовки экономит неделю зимних проблем.',
     ],
     category: 'Дом и энергия',
+    authorId: 'au-anna',
     author: 'Анна Лапина',
     date: '5 сентября',
     cover: COVER_HOUSE,
     views: 712,
-    likes: 41,
-    comments: 8,
     status: 'published',
   },
   {
@@ -87,12 +125,11 @@ export const articles: Article[] = [
       'Обратно возвращаемся по просеке. С детьми путь занимает около трёх часов, налегке — полтора.',
     ],
     category: 'Жизнь за городом',
+    authorId: 'au-petr',
     author: 'Пётр Гринёв',
     date: '2 сентября',
     cover: COVER_FOREST,
     views: 528,
-    likes: 37,
-    comments: 5,
     status: 'published',
   },
   {
@@ -106,12 +143,11 @@ export const articles: Article[] = [
       'Правило третье: место. Три метра от забора и подветренная сторона решают почти все спорные вопросы заранее.',
     ],
     category: 'Сад и участок',
+    authorId: 'au-maria',
     author: 'Мария Ковалёва',
     date: '29 августа',
     cover: COVER_PLOT,
     views: 401,
-    likes: 28,
-    comments: 9,
     status: 'published',
   },
   {
@@ -125,12 +161,11 @@ export const articles: Article[] = [
       'Главное, что мы поняли: важнее сметы был человек, который вёл список задач и отмечал сделанное.',
     ],
     category: 'Семья и отдых',
+    authorId: 'au-olga',
     author: 'Ольга Титова',
     date: '24 августа',
     cover: COVER_HOUSE,
     views: 366,
-    likes: 44,
-    comments: 14,
     status: 'published',
   },
   {
@@ -144,12 +179,11 @@ export const articles: Article[] = [
       'После одобрения статья появляется в ленте и в своей категории. Отклонённую можно доработать и отправить снова.',
     ],
     category: 'О проекте',
+    authorId: 'au-redaction',
     author: 'Редакция',
     date: '20 августа',
     cover: COVER_FOREST,
     views: 1204,
-    likes: 51,
-    comments: 3,
     status: 'published',
   },
 ];

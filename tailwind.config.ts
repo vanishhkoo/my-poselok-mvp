@@ -69,8 +69,8 @@ export default {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			fontFamily: {
-				head: ['Manrope', 'sans-serif'],
-				body: ['Inter', 'sans-serif']
+				head: ['Nunito Sans', 'Manrope', 'sans-serif'],
+				body: ['Manrope', 'sans-serif']
 			},
 			keyframes: {
 				'fade-in': {

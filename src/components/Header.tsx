@@ -1,21 +1,16 @@
 import { useEffect, useState } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useAuth } from '@/contexts/AuthContext';
 
 const links = [
-  { href: '#journal', label: 'Журнал' },
-  { href: '#how', label: 'Авторам' },
-  { href: '#rules', label: 'Правила' },
-  { href: '#about', label: 'О проекте' },
+  { href: '/', label: 'Журнал' },
+  { href: '/#how', label: 'Авторам' },
+  { href: '/#rules', label: 'Правила' },
+  { href: '/#about', label: 'О проекте' },
 ];
-
-interface HeaderProps {
-  user: string | null;
-  onAuth: () => void;
-  onLogout: () => void;
-  onCreate: () => void;
-}
 
 const Logo = () => (
   <div className="flex items-center gap-2.5">
@@ -29,7 +24,9 @@ const Logo = () => (
   </div>
 );
 
-const Header = ({ user, onAuth, onLogout, onCreate }: HeaderProps) => {
+const Header = () => {
+  const { profile, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -39,11 +36,6 @@ const Header = ({ user, onAuth, onLogout, onCreate }: HeaderProps) => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const go = (href: string) => {
-    setOpen(false);
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
   return (
     <header
       className={`sticky top-0 z-50 transition-colors ${
@@ -51,44 +43,55 @@ const Header = ({ user, onAuth, onLogout, onCreate }: HeaderProps) => {
       }`}
     >
       <div className="mx-auto grid max-w-[1400px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 py-4 md:px-8">
-        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="justify-self-start">
+        <Link to="/" className="justify-self-start">
           <Logo />
-        </button>
+        </Link>
 
         <nav className="hidden justify-center gap-8 md:flex">
           {links.map((l) => (
-            <button
+            <NavLink
               key={l.href}
-              onClick={() => go(l.href)}
+              to={l.href}
               className="story-link text-[15px] font-medium text-foreground transition-colors hover:text-primary"
             >
               {l.label}
-            </button>
+            </NavLink>
           ))}
         </nav>
         <span className="md:hidden" />
 
         <div className="flex items-center justify-end gap-2">
-          {user ? (
+          {isAuthenticated && profile ? (
             <div className="hidden items-center gap-2 md:flex">
-              <Button size="sm" className="rounded-full px-5" onClick={onCreate}>
+              <Button size="sm" className="rounded-full px-5" onClick={() => navigate('/write')}>
                 <Icon name="Plus" size={16} className="mr-1.5" />
                 Создать статью
               </Button>
               <button
-                onClick={onLogout}
-                title="Выйти"
+                onClick={() => navigate('/profile')}
+                title="Профиль"
                 className="flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-accent"
               >
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground">
                   <Icon name="User" size={13} />
                 </span>
-                {user}
+                {profile.name}
+              </button>
+              <button
+                onClick={() => {
+                  logout();
+                  navigate('/');
+                }}
+                title="Выйти"
+                className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                aria-label="Выйти"
+              >
+                <Icon name="LogOut" size={16} />
               </button>
             </div>
           ) : (
             <button
-              onClick={onAuth}
+              onClick={() => navigate('/auth')}
               className="hidden text-[15px] text-muted-foreground transition-colors hover:text-primary md:block"
             >
               Войти
@@ -104,22 +107,23 @@ const Header = ({ user, onAuth, onLogout, onCreate }: HeaderProps) => {
             <SheetContent side="right" className="w-[78%] sm:w-80">
               <div className="mt-2 flex flex-col gap-1">
                 {links.map((l) => (
-                  <button
+                  <Link
                     key={l.href}
-                    onClick={() => go(l.href)}
+                    to={l.href}
+                    onClick={() => setOpen(false)}
                     className="rounded-lg px-3 py-3 text-left text-base font-medium transition-colors hover:bg-muted"
                   >
                     {l.label}
-                  </button>
+                  </Link>
                 ))}
                 <div className="mt-4 border-t border-border pt-4">
-                  {user ? (
+                  {isAuthenticated && profile ? (
                     <div className="flex flex-col gap-2">
                       <Button
                         className="rounded-full"
                         onClick={() => {
                           setOpen(false);
-                          onCreate();
+                          navigate('/write');
                         }}
                       >
                         Создать статью
@@ -129,10 +133,21 @@ const Header = ({ user, onAuth, onLogout, onCreate }: HeaderProps) => {
                         className="rounded-full"
                         onClick={() => {
                           setOpen(false);
-                          onLogout();
+                          navigate('/profile');
                         }}
                       >
-                        Выйти ({user})
+                        Профиль ({profile.name})
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="rounded-full"
+                        onClick={() => {
+                          setOpen(false);
+                          logout();
+                          navigate('/');
+                        }}
+                      >
+                        Выйти
                       </Button>
                     </div>
                   ) : (
@@ -140,7 +155,7 @@ const Header = ({ user, onAuth, onLogout, onCreate }: HeaderProps) => {
                       className="w-full rounded-full"
                       onClick={() => {
                         setOpen(false);
-                        onAuth();
+                        navigate('/auth');
                       }}
                     >
                       Войти

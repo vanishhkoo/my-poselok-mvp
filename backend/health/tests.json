@@ -1,0 +1,15 @@
+{
+  "tests": [
+    {
+      "name": "Health check returns healthy status",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "status": "healthy",
+        "service": "my-poselok-api"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
